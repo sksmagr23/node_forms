@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Node Project</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Georama:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        function resetForm() {
+            document.getElementById("productForm").reset();
+            document.getElementById("index").value = "";
+            document.getElementById("submitButton").textContent = "Add Product";
+        }
+
+        function editProduct(data) {
+            const product = JSON.parse(data);
+            document.getElementById("name").value = product.name;
+            document.getElementById("price").value = product.price;
+            document.getElementById("description").value = product.description;
+            document.getElementById("index").value = product.index;
+            document.getElementById("submitButton").textContent = "Update Product";
+        }
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1>Product Management  |  Node Project</h1>
+        </div>
+    </nav>
+    <main>
+        <section class="add-product">
+            <h2>Add a New Product</h2>
+            <form id="productForm" action="/add-product" method="POST">
+                <input type="hidden" id="index" name="index" value="">
+                <input type="text" id="name" name="name" placeholder="Enter the Product name" required>
+                <input type="number" id="price" name="price" placeholder="Enter the Product Price" required>
+                <input type="text" id="description" name="description" placeholder="Enter its Description">
+                <div class="form-buttons">
+                    <button type="submit" id="submitButton">Add New</button>
+                    <button type="button" onclick="resetForm()">Clear</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="product-list">
+            <h2>My Products</h2>
+            <% if (errors.length > 0) { %>
+                <ul class="errors">
+                    <% errors.forEach(error => { %>
+                        <li><%= error %></li>
+                    <% }); %>
+                </ul>
+            <% } %>
+
+            <ul class="products">
+                <% products.forEach((product, index) => { 
+                    const productData = JSON.stringify({
+                        index,
+                        name: product.name,
+                        price: product.price,
+                        description: product.description
+                    });
+                %>
+                    <li>
+                        <div class="product-details">
+                            <h3><%= product.name %></h3>
+                            <p class="price">$<%= product.price %></p>
+                            <p><%= product.description %></p>
+                        </div>
+                        <div class="product-actions">
+                            <button type="button" onclick='editProduct(`<%= productData %>`)'>
+                                <img src="/edit-icon.png" alt="Edit">
+                            </button>
+                            <form action="/remove-product" method="POST" class="inline-form">
+                                <input type="hidden" name="index" value="<%= index %>">
+                                <button type="submit">
+                                    <img src="/remove-icon.png" alt="Remove">
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                <% }); %>
+            </ul>
+        </section>
+    </main>
+</body>
+</html>
